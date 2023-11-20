@@ -1,7 +1,7 @@
 ----
 *Bioinformatics*
 
-*Mokuyo Kou*
+*Muyang Huang*
 
 *Last Update: 2018-12-18*
 
