@@ -1,0 +1,150 @@
+# Last update: 03/26/2023
+
+cd 
+
+mkdir gCSD_Tsuruoka
+cd gCSD_Tsuruoka
+mkdir raw script analyses
+cd raw
+wget 
+
+gpg --print-md md5 DNBSEQ_203_Read1.fq.gz
+gpg --print-md md5 DNBSEQ_203_Read2.fq.gz
+cat *.md5
+cd ..
+
+#クオリティ管理にはFASTQC, アダプタートリミングにはCutadapt, リードのプルーニングとフィルター処理にはTrimmomaticを使用するのが典型的な組み合わせ．
+#レポートのAdaptersのセクションのother adapter sequencesの行が見つかる．
+
+
+ % fastp -i raw/DNBSEQ_203_Read1.fq -I raw/DNBSEQ_203_Read2.fq -o analyses/203_R1_qc.fq.gz -O analyses/203_R2_qc.fq.gz -h analyses/203.report.html -j analyses/203.report.json -q 20 -t 1 -T 1 -l 20 -w $(getconf _NPROCESSORS_ONLN)
+Read1 before filtering:
+total reads: 17602330
+total bases: 2640349500
+Q20 bases: 2597468213(98.3759%)
+Q30 bases: 2506887796(94.9453%)
+
+Read2 before filtering:
+total reads: 17602330
+total bases: 2640349500
+Q20 bases: 2491640104(94.3678%)
+Q30 bases: 2264835785(85.7779%)
+
+Read1 after filtering:
+total reads: 17598012
+total bases: 2619266675
+Q20 bases: 2577075854(98.3892%)
+Q30 bases: 2487678404(94.9761%)
+
+Read2 after filtering:
+total reads: 17598012
+total bases: 2619266675
+Q20 bases: 2473690817(94.4421%)
+Q30 bases: 2250140854(85.9073%)
+
+Filtering result:
+reads passed filter: 35196024
+reads failed due to low quality: 148
+reads failed due to too many N: 8488
+reads failed due to too short: 0
+reads with adapter trimmed: 351954
+bases trimmed due to adapters: 5674228
+
+Duplication rate: 0.471296%
+
+Insert size peak (evaluated by paired-end reads): 248
+
+JSON report: 203.report.json
+HTML report: 203.report.html
+
+fastp -i DNBSEQ_203_Read1.fq -I DNBSEQ_203_Read2.fq -o 203_R1_qc.fq.gz -O 203_R2_qc.fq.gz -h 203.report.html -j 203.report.json -q 20 -t 1 -T 1 -l 20 -w 4
+fastp v0.23.2, time used: 456 seconds
+
+
+ % fastp -i raw/DNBSEQ_203_Read1.fq -I raw/DNBSEQ_203_Read2.fq -o analyses/203_R1_qc_dafp.fq.gz -O analyses/203_R2_qc_dafp.fq.gz -h analyses/203_dafp.report.html -j analyses/203_dafp.report.json -q 20 -t 1 -T 1 -l 20 --detect_adapter_for_pe -w $(getconf _NPROCESSORS_ONLN)
+Detecting adapter sequence for read1...
+>MGI/BGI adapter (forward)
+AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 17602330
+total bases: 2640349500
+Q20 bases: 2597468213(98.3759%)
+Q30 bases: 2506887796(94.9453%)
+
+Read2 before filtering:
+total reads: 17602330
+total bases: 2640349500
+Q20 bases: 2491640104(94.3678%)
+Q30 bases: 2264835785(85.7779%)
+
+Read1 after filtering:
+total reads: 17597951
+total bases: 2618936295
+Q20 bases: 2576759942(98.3896%)
+Q30 bases: 2487383383(94.9769%)
+
+Read2 after filtering:
+total reads: 17597951
+total bases: 2619257586
+Q20 bases: 2473682849(94.4421%)
+Q30 bases: 2250134357(85.9073%)
+
+Filtering result:
+reads passed filter: 35195902
+reads failed due to low quality: 142
+reads failed due to too many N: 8488
+reads failed due to too short: 128
+reads with adapter trimmed: 383623
+bases trimmed due to adapters: 6002697
+
+Duplication rate: 0.471296%
+
+Insert size peak (evaluated by paired-end reads): 248
+
+JSON report: 203_dafp.report.json
+HTML report: 203_dafp.report.html
+
+fastp -i DNBSEQ_203_Read1.fq -I DNBSEQ_203_Read2.fq -o 203_R1_qc_dafp.fq.gz -O 203_R2_qc_dafp.fq.gz -h 203_dafp.report.html -j 203_dafp.report.json -q 20 -t 1 -T 1 -l 20 --detect_adapter_for_pe -w 4
+fastp v0.23.2, time used: 424 seconds
+
+
+mkdir database
+ % metaphlan --install --bowtie2db database
+
+Downloading http://cmprod1.cibio.unitn.it/biobakery4/metaphlan_databases/mpa_latest
+Downloading file of size: 0.00 MB
+0.01 MB 25600.00 %  66.74 MB/sec  0 min -0 sec
+Downloading MetaPhlAn database
+Please note due to the size this might take a few minutes
+
+\Downloading and uncompressing indexes
+
+Downloading http://cmprod1.cibio.unitn.it/biobakery4/metaphlan_databases/bowtie2_indexes/mpa_vOct22_CHOCOPhlAnSGB_202212_bt2.tar
+Downloading file of size: 20348.27 MB
+20348.27 MB 100.00 %   2.87 MB/sec  0 min -0 sec
+Downloading http://cmprod1.cibio.unitn.it/biobakery4/metaphlan_databases/bowtie2_indexes/mpa_vOct22_CHOCOPhlAnSGB_202212_bt2.md5
+Downloading file of size: 0.00 MB
+0.01 MB 11070.27 %  28.82 MB/sec  0 min -0 sec
+
+Downloading and uncompressing additional files
+
+Downloading http://cmprod1.cibio.unitn.it/biobakery4/metaphlan_databases/mpa_vOct22_CHOCOPhlAnSGB_202212.tar
+Downloading file of size: 2884.91 MB
+2884.91 MB 100.00 %   2.15 MB/sec  0 min -0 sec
+Downloading http://cmprod1.cibio.unitn.it/biobakery4/metaphlan_databases/mpa_vOct22_CHOCOPhlAnSGB_202212.md5
+Downloading file of size: 0.00 MB
+0.01 MB 11702.86 %  49.50 MB/sec  0 min -0 sec
+
+Decompressing tmp/mpa_vOct22_CHOCOPhlAnSGB_202212_SGB.fna.bz2 into tmp/mpa_vOct22_CHOCOPhlAnSGB_202212_SGB.fna
+
+
+Decompressing tmp/mpa_vOct22_CHOCOPhlAnSGB_202212_VSG.fna.bz2 into tmp/mpa_vOct22_CHOCOPhlAnSGB_202212_VSG.fna
+Removing uncompressed databases
+
+Download complete
+The database is installed
+
